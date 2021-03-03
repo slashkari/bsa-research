@@ -1,0 +1,152 @@
+---
+title: "BSA Research"
+author: "Sean Lashkari, Arjun Parikh"
+date: "2/20/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include = FALSE}
+library(tidyverse)
+```
+
+Make sure `rates.csv`, `run_pct.csv`, and `hr_pct.csv` are in your working directory.
+```{r, include = FALSE}
+rates_df <- read_csv("rates.csv")
+run_pct <- read_csv("run_pct.csv")
+hr_pct <- read_csv("hr_pct.csv")
+```
+
+
+
+Here are two t-tests. The first is testing for a difference between the proportion of runs scored at home before and after a fence change for all teams. The second is testing for a difference between the proportion of home runs scored at home before and after a fence change for all teams.
+```{r}
+x <- filter(run_pct, flag == "before", location == "home") %>% select(run_percent)
+y <- filter(run_pct, flag == "after", location == "home") %>% select(run_percent)
+t.test(x$run_percent, y$run_percent)
+
+x <- filter(hr_pct, flag == "before", location == "home") %>% select(hr_percent)
+y <- filter(hr_pct, flag == "after", location == "home") %>% select(hr_percent)
+t.test(x$hr_percent, y$hr_percent)
+```
+
+We obtain two very large p-values. According to the tests, we have no evidence that there is a difference between the proportion of runs and home runs scored at home before and after a dimension change. We will now graphically explore run proportions scored at home for each team.
+
+
+
+# Houston Astros
+```{r, echo = FALSE}
+par(mfrow = c(1, 2))
+
+# run pct boxplot
+box_df <- run_pct %>% filter(location == "home", team == "HOU") # make df suitable for boxplots
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(run_percent ~ flag, col = "orange", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Runs Scored at Home",
+        main = "Houston Astros")
+
+# home run pct boxplot
+box_df <- hr_pct %>% filter(location == "home", team == "HOU") # make df suitable for boxplots
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(hr_percent ~ flag, col = "orange", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Home Runs at Home",
+        main = "Houston Astros")
+```
+
+# Miami Marlins
+```{r, echo = FALSE}
+par(mfrow = c(1, 2))
+
+# run pct boxplot
+box_df <- run_pct %>% filter(location == "home", team %in% c("FLA", "MIA"))
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(run_percent ~ flag, col = "cyan", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Runs Scored at Home",
+        main = "Miami Marlins")
+
+# home run pct boxplot
+box_df <- hr_pct %>% filter(location == "home", team %in% c("MIA", "FLA")) # make df suitable for boxplots
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(hr_percent ~ flag, col = "cyan", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Home Runs at Home",
+        main = "Miami Marlins")
+```
+
+# San Diego Padres
+```{r, echo = FALSE}
+par(mfrow = c(1, 2))
+
+# run pct boxplot
+box_df <- run_pct %>% filter(location == "home", team == "SDP")
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(run_percent ~ flag, col = "darkgoldenrod", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Runs Scored at Home",
+        main = "San Diego Padres")
+
+# home run pct boxplot
+box_df <- hr_pct %>% filter(location == "home", team == "SDP") # make df suitable for boxplots
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(hr_percent ~ flag, col = "darkgoldenrod", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Home Runs at Home",
+        main = "San Diego Padres")
+```
+
+# Seattle Mariners
+```{r, echo = FALSE}
+par(mfrow = c(1, 2))
+
+# run pct boxplot
+box_df <- run_pct %>% filter(location == "home", team == "SEA")
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(run_percent ~ flag, col = "darkslategray", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Runs Scored at Home",
+        main = "Seattle Mariners")
+
+box_df <- hr_pct %>% filter(location == "home", team == "SEA") # make df suitable for boxplots
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(hr_percent ~ flag, col = "darkslategray", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Home Runs at Home",
+        main = "Seattle Mariners")
+```
+
+# Atlanta Braves
+```{r, echo = FALSE}
+par(mfrow = c(1, 2))
+
+# run pct boxplot
+box_df <- run_pct %>% filter(location == "home", team == "ATL")
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(run_percent ~ flag, col = "darkred", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Runs Scored at Home",
+        main = "Atlanta Braves")
+
+# home run pct boxplot
+box_df <- hr_pct %>% filter(location == "home", team == "ATL") # make df suitable for boxplots
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(hr_percent ~ flag, col = "darkred", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Home Runs at Home",
+        main = "Atlanta Braves")
+```
+
+# Minnesota Twins
+```{r, echo = FALSE}
+par(mfrow = c(1, 2))
+
+# run pct boxplot
+box_df <- run_pct %>% filter(location == "home", team == "MIN")
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(run_percent ~ flag, col = "steelblue4", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Runs Scored at Home",
+        main = "Minnesota Twins")
+
+# home run pct boxplot
+box_df <- hr_pct %>% filter(location == "home", team == "MIN") # make df suitable for boxplots
+box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
+boxplot(hr_percent ~ flag, col = "steelblue4", data = box_df, 
+        xlab = "Time Relative to Fence Change", ylab = "Proportion of Home Runs at Home",
+        main = "Minnesota Twins")
+```
+
