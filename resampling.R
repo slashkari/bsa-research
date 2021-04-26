@@ -39,38 +39,53 @@ wilcox_test(run_percent ~ flag, data = astros, distribution = "exact")
 
 
 # manually permute data to see if it matches above results and to generate a plot
-n <- choose(9, 5) # number of permutations of astros data
-perms <- list()
-index <- 0
-while(length(perms) != n) {
-  index <- index + 1
+perm_func <- function(df) {
+  k <- nrow(filter(df, flag == "before"))
+  n <- choose(nrow(df), k) # number of permutations of data
+  perms <- list()
+  index <- 0
+  while(length(perms) != n) {
+    index <- index + 1
   
-  # generate new possible permutation
-  possible_perm <- data.frame("run_percent" = sample(astros$run_percent), "flag" = astros$flag)
+    # generate new possible permutation
+    possible_perm <- data.frame("run_percent" = sample(df$run_percent), "flag" = df$flag)
   
-  # special condition when list is empty
-  if(length(perms) == 0) { 
-    perms[[index]] <- possible_perm
-  } 
-  else {
+    # special condition when list is empty
+    if(length(perms) == 0) { 
+      perms[[index]] <- possible_perm
+    } 
+    else {
     
-    # check if possible df is equal to any other current dfs in output list
-    for(i in 1:length(perms)) {
-      if(identical(possible_perm, perms[[i]])) break 
-      if(i == length(perms)) perms[[i + 1]] <- possible_perm
+      # check if possible df is equal to any other current dfs in output list
+      for(i in 1:length(perms)) {
+        if(identical(possible_perm, perms[[i]])) break 
+        if(i == length(perms)) perms[[i + 1]] <- possible_perm
+      }
     }
   }
+  
+  perms
 }
 
 # above loop is probably not correct, empirical p-value is not the same as pval from coin tests
+# hist and pvalue change everytime perm_func is called which shouldnt be happening
 
 # distribution of all mean differences from permutation test
-perm_dist <- sapply(perms, extract_stat)
+perm_list <- perm_func(astros)
+perm_dist <- sapply(perm_func(astros), extract_stat)
 hist(perm_dist, xlab = "mean difference", main = 
        "difference between mean run prop before and after dim change")
 
 # empirical p-value
-mean(sapply(perms, extract_stat) >= 0.02008508)
+mean(sapply(perm_func(astros), extract_stat) >= 0.02008508)
+
+# need to check if any of the dfs of perm_func(df) are equal to each other
+for(i in 1:length(perm_list)) {
+  equals <- sapply(perm_list, identical, perm_list[[i]])
+  indices <- which(equals)
+  cat("Indices of dfs same as element ", i, " of perm_list: ", indices, "\n", sep = "")
+}
+# everything checks out
 
 
 ###################################################################################################

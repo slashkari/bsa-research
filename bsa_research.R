@@ -1,7 +1,7 @@
 library(tidyverse)
 library(rvest)
 library(car)
-dims <- read_csv("ballpark_dims2.csv")
+dims <- read_csv("data/ballpark_dims2.csv")
 # first create simple model predicting wRC+ or percent runs scored at home
 # from predictors deepest, mean distance change, absolute distance changes
 # (one for left, left-center, etc.)
@@ -319,6 +319,6 @@ boxplot(hr_percent ~ flag, col = "steelblue4", data = box_df,
 
 
 # export run_pct, hr_pct and rates_df dataframes
-write.csv(run_pct, file = "run_pct.csv", row.names = FALSE)
-write.csv(hr_pct, file = "hr_pct.csv", row.names = FALSE)
-write.csv(rates_df, file = "rates.csv", row.names = FALSE)
+# write.csv(run_pct, file = "run_pct.csv", row.names = FALSE)
+# write.csv(hr_pct, file = "hr_pct.csv", row.names = FALSE)
+# write.csv(rates_df, file = "rates.csv", row.names = FALSE)
