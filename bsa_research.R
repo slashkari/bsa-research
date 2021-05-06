@@ -1,7 +1,7 @@
 library(tidyverse)
 library(rvest)
 library(car)
-dims <- read_csv("ballpark_dims2.csv")
+dims <- read_csv("data/ballpark_dims2.csv")
 # first create simple model predicting wRC+ or percent runs scored at home
 # from predictors deepest, mean distance change, absolute distance changes
 # (one for left, left-center, etc.)
@@ -144,7 +144,7 @@ t.test(x$hr_percent, y$hr_percent)
 x <- filter(run_pct, flag == "before", location == "home", team == "HOU") %>% select(run_percent)
 y <- filter(run_pct, flag == "after", location == "home", team == "HOU") %>% select(run_percent)
 t.test(x$run_percent, y$run_percent)
-
+par(mfrow = c(1, 2))
 # run pct boxplot
 box_df <- run_pct %>% filter(location == "home", team == "HOU") # make df suitable for boxplots
 box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
@@ -167,7 +167,6 @@ boxplot(hr_percent ~ flag, col = "orange", data = box_df,
 
 
 
-
 # -----------------------------------------Miami Marlins------------------------------------------
 # run_pct
 x <- filter(run_pct, flag == "before", location == "home", team == c("FLA", "MIA")) %>% 
@@ -180,7 +179,7 @@ t.test(x$run_percent, y$run_percent)
 box_df <- run_pct %>% filter(location == "home", team %in% c("FLA", "MIA"))
 box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
 boxplot(run_percent ~ flag, col = "cyan", data = box_df, 
-        xlab = "Time Relative to Fence Change", ylab = "Proportion of Runs Scored at Home",
+        ylab = "Proportion of Runs Scored at Home",
         main = "Miami Marlins")
 
 # home run pct
@@ -194,7 +193,7 @@ t.test(x$hr_percent, y$hr_percent)
 box_df <- hr_pct %>% filter(location == "home", team %in% c("MIA", "FLA")) # make df suitable for boxplots
 box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
 boxplot(hr_percent ~ flag, col = "cyan", data = box_df, 
-        xlab = "Time Relative to Fence Change", ylab = "Proportion of Home Runs at Home",
+        ylab = "Proportion of Home Runs at Home",
         main = "Miami Marlins")
 
 
@@ -240,7 +239,7 @@ t.test(x$run_percent, y$run_percent)
 box_df <- run_pct %>% filter(location == "home", team == "SEA")
 box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
 boxplot(run_percent ~ flag, col = "darkslategray", data = box_df, 
-        xlab = "Time Relative to Fence Change", ylab = "Proportion of Runs Scored at Home",
+        ylab = "Proportion of Runs Scored at Home",
         main = "Seattle Mariners")
 
 # home run pct
@@ -252,7 +251,7 @@ t.test(x$hr_percent, y$hr_percent)
 box_df <- hr_pct %>% filter(location == "home", team == "SEA") # make df suitable for boxplots
 box_df$flag <- factor(box_df$flag, levels = c("before", "after")) # intuitively order the plots
 boxplot(hr_percent ~ flag, col = "darkslategray", data = box_df, 
-        xlab = "Time Relative to Fence Change", ylab = "Proportion of Home Runs at Home",
+        ylab = "Proportion of Home Runs at Home",
         main = "Seattle Mariners")
 
 
@@ -320,6 +319,6 @@ boxplot(hr_percent ~ flag, col = "steelblue4", data = box_df,
 
 
 # export run_pct, hr_pct and rates_df dataframes
-write.csv(run_pct, file = "run_pct.csv", row.names = FALSE)
-write.csv(hr_pct, file = "hr_pct.csv", row.names = FALSE)
-write.csv(rates_df, file = "rates.csv", row.names = FALSE)
+# write.csv(run_pct, file = "run_pct.csv", row.names = FALSE)
+# write.csv(hr_pct, file = "hr_pct.csv", row.names = FALSE)
+# write.csv(rates_df, file = "rates.csv", row.names = FALSE)
