@@ -12,9 +12,9 @@ colnames(dims)[9] <- "years_active" # rename years column
 
 
 # vectors of team abbreviations and years to create vector of sites to loop through
-team_abbrevs <- c(rep("HOU", 9), rep("FLA", 2), rep("MIA", 9), rep("SDP", 10), 
-                  rep("SEA", 10), rep("ATL", 9), rep("MIN", 10))
-years <- c(2012:2020, 2010:2020, 2008:2017, 2008:2017, 2012:2020, 2005:2014)
+team_abbrevs <- c(rep("HOU", 16), rep("FLA", 6), rep("MIA", 9), rep("SDP", 18), 
+                  rep("SEA", 18), rep("ATL", 17), rep("MIN", 21))
+years <- c(2005:2020, 2006:2020, 2003:2020, 2003:2020, 2004:2020, 2000:2020)
 
 # map teams to their abbreviations to use in loop
 # team_map <- data.frame(team = unique(dims$team), abbrev = c(unique(team_abbrevs)))
@@ -89,30 +89,30 @@ hist(rates_df$hr_percent)
 dims <- add_column(dims, avg_dist = rowMeans(dims[, 3:7]), .before = "years_active")
 
 # add avg distances to rates_df by corresponding year
-rates_df <- add_column(rates_df, avg_dist = c(rep(362.4, 10), rep(357, 8), rep(375, 12),
-                                              rep(372.8, 8), rep(370.4, 2), rep(371.6, 10),
-                                              rep(367, 10), rep(367.4, 10), rep(363.4, 10),
-                                              rep(367, 10), rep(364, 8), rep(366, 10),
-                                              rep(363, 10)), .before = "year")
+# rates_df <- add_column(rates_df, avg_dist = c(rep(362.4, 10), rep(357, 8), rep(375, 12),
+#                                               rep(372.8, 8), rep(370.4, 2), rep(371.6, 10),
+#                                               rep(367, 10), rep(367.4, 10), rep(363.4, 10),
+#                                               rep(367, 10), rep(364, 8), rep(366, 10),
+#                                               rep(363, 10)), .before = "year")
 
 
 # create dfs for t tests of run pct and home run pct for each team
 # create flag variable signifying if season was before or after dimension changes
 run_pct <- cbind.data.frame(rates_df[, 1:3],
-                            flag = factor(c(rep("before", 10), rep("after", 8),
-                                            rep("before", 12), rep("after", 10),
-                                            rep("before", 10), rep("after", 10),
-                                            rep("before", 10), rep("after", 10),
-                                            rep("before", 10), rep("after", 8),
-                                            rep("before", 10), rep("after", 10))))
+                            flag = factor(c(rep("before", 24), rep("after", 8),
+                                            rep("before", 20), rep("after", 10),
+                                            rep("before", 20), rep("after", 16),
+                                            rep("before", 20), rep("after", 16),
+                                            rep("before", 26), rep("after", 8),
+                                            rep("before", 20), rep("after", 22))))
 
 hr_pct <- cbind.data.frame(rates_df[, c(1, 2, 4)],
-                           flag = factor(c(rep("before", 10), rep("after", 8),
-                                           rep("before", 12), rep("after", 10),
-                                           rep("before", 10), rep("after", 10),
-                                           rep("before", 10), rep("after", 10),
-                                           rep("before", 10), rep("after", 8),
-                                           rep("before", 10), rep("after", 10))))
+                           flag = factor(c(rep("before", 24), rep("after", 8),
+                                           rep("before", 20), rep("after", 10),
+                                           rep("before", 20), rep("after", 16),
+                                           rep("before", 20), rep("after", 16),
+                                           rep("before", 26), rep("after", 8),
+                                           rep("before", 20), rep("after", 22))))
 
 # t test
 # test if mean run percentage of runs scored at home is different before and after dim change

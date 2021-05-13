@@ -48,7 +48,7 @@ plot_side(babip)
 # print out means of each team before and after
 # stat is a string of how you want the stat displayed when printing (e.g. "BB%", "BABIP", "wRC+")
 # percent = FALSE means stat is a real number and will be rounded to 3 places
-# percent = TRUE means stat is a percetage, % will be appended to stat when printing
+# percent = TRUE means stat is a percentage, % will be appended to stat when printing
 print_means <- function(data, stat, percent = FALSE) {
   for(team in unique(data$Team)) {
     before <- data %>% filter(Team == team, flag == "before")

@@ -43,7 +43,7 @@ for year in years:
     # click appropriate year
     time = driver.find_element_by_xpath('//*[text()=' + str(year) + ']')
     driver.execute_script("arguments[0].click();", time)
-
+    
     # get data from table
     table = driver.find_elements_by_class_name("grid_line_regular")
 
