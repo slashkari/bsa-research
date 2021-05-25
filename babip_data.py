@@ -4,14 +4,14 @@ from selenium.webdriver.chrome.options import Options
 import pandas as pd
 import os
 
-teams = {'HOU':list(range(2012, 2021)),
-         'MIA':list(range(2010, 2021)),
-         'SDP':list(range(2008, 2018)),
-         'SEA':list(range(2008, 2018)),
-         'ATL':list(range(2012, 2021)),
-         'MIN':list(range(2005, 2015))}
+teams = {'HOU':list(range(2005, 2021)),
+         'MIA':list(range(2006, 2021)),
+         'SDP':list(range(2003, 2021)),
+         'SEA':list(range(2003, 2021)),
+         'ATL':list(range(2004, 2021)),
+         'MIN':list(range(2002, 2021))}
 
-years = list(range(2005, 2021))
+years = list(range(2002, 2021))
 
 # initialize output df
 output = pd.DataFrame()
@@ -19,8 +19,8 @@ output = pd.DataFrame()
 # start webscraping session
 driver = webdriver.Chrome()
 
-# start off at team batting stats 2005 page
-driver.get("https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=0&type=1&season=2005&month=15&season1=2005&ind=0&team=0,ts&rost=0&age=0&filter=&players=0")
+# start off at team batting stats 2002 page
+driver.get("https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=0&type=1&season=2002&month=15&season1=2002&ind=0&team=0,ts&rost=0&age=0&filter=&players=0")
 
 # locate dropdown menu and click on it
 dropDown = driver.find_element_by_id("LeaderBoard1_rcbMonth_Arrow") # THIS WORKS
@@ -91,13 +91,8 @@ output = output.sort_values(["Team", "Year"])
 
 # write to csv
 path = r'C:/Users/slash/Documents/bsa-research/data'
-output_file = os.path.join(path, "babip_data.csv")
-# output.to_csv(output_file, index = False)
-
-
-    
-
-
+output_file = os.path.join(path, "wrcplus_data.csv")
+output.to_csv(output_file, index = False)
 
 
 

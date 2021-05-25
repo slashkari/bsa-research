@@ -2,21 +2,31 @@ library(dplyr)
 
 
 
-# function to extract test statistic from a permuted dataframe
-# test statistic is mean difference between run props before and after dim change
-extract_stat <- function(x) {
-  before <- filter(x, flag == "before")$run_percent
-  after <- filter(x, flag == "after")$run_percent
-  stat <- mean(after) - mean(before)
-  stat
+
+#' extract_stat()
+#'
+#' Extracts desired test statistic from dataframe
+#'
+#' @param x dataframe to get stat from
+#' @param stat string of desired statistic, needs to match column name in df 
+#'
+#' @return numeric vector length 1
+#' 
+extract_stat <- function(x, stat) {
+  before <- filter(x, flag == "before")
+  before <- before[, stat]
+  after <- filter(x, flag == "after")
+  after <- after[, stat]
+  output <- mean(after) - mean(before)
+  output
 }
 
 
 
 
 
-
-perm_func <- function(df) {
+# could cap it if num of permutations is too large
+perm_func <- function(df, stat) {
   k <- nrow(filter(df, flag == "before"))
   n <- choose(nrow(df), k) # number of permutations of data
   perms <- list()
@@ -25,7 +35,8 @@ perm_func <- function(df) {
     index <- index + 1
     
     # generate new possible permutation
-    possible_perm <- data.frame("run_percent" = sample(df$run_percent), "flag" = df$flag)
+    possible_perm <- data.frame(stat = sample(df[, stat]), "flag" = df$flag)
+    colnames(possible_perm)[1] <- stat
     
     # special condition when list is empty
     if(length(perms) == 0) { 
@@ -47,14 +58,18 @@ perm_func <- function(df) {
 
 
 
-bootstrap_all <- function(data) {
-  before <- filter(data, flag == "before", location == "home")
-  after <- filter(data, flag == "after", location == "home")
+
+
+bootstrap_all <- function(data, stat) {
+  before_n <- nrow(filter(data, flag == "before"))
+  after_n <- nrow(filter(data, flag == "after"))
+  before <- filter(data, flag == "before")
+  after <- filter(data, flag == "after")
   before_i <- sample(before_n, replace = TRUE)
   after_i <- sample(after_n, replace = TRUE)
   before <- before[before_i, ]
   after <- after[after_i, ]
-  output <- list("before" = before$run_percent, "after" = after$run_percent)
+  output <- list("before" = before[, stat], "after" = after[, stat])
   output
 }
 
@@ -62,3 +77,33 @@ bootstrap_all <- function(data) {
 
 
 
+
+cdf_overlayed <- function(dist, color, team) {
+  s <- seq(range(dist)[1], range(dist)[2], by = 0.0001)
+  plot(s, pnorm(s, mean = mean(dist), sd = sd(dist)), col = color, lwd = 3, xlab = "x",
+       ylab = "probability", main = team)
+  lines(ecdf(dist), cex = 0.5)
+}
+
+
+
+
+
+
+hist_overlayed <- function(dist, color, team) {
+  s <- seq(range(dist)[1], range(dist)[2], by = 0.00001)
+  hist(dist, xlab = "x", ylab = "density", main = team, freq = FALSE)
+  lines(s, dnorm(s, mean = mean(dist), sd = sd(dist)), col = color, lwd = 2)
+}
+
+
+
+
+
+
+cdf_overlayed_test <- function(dist, color, team) {
+  s <- seq(range(dist)[1], range(dist)[2], by = 0.0001)
+  plot(s, pnorm(s, mean = mean(dist), sd = sd(dist)), col = color, lwd = 3, xlab = "x",
+       ylab = "probability", main = team)
+  lines(ecdf(dist), cex = 0.5)
+}
