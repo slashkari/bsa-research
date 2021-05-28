@@ -383,3 +383,40 @@ colnames(wrc)[2] <- "wRC+"
 # distance to each of 5 points in outfield, average fence distance, deepest part, avg temp of park,
 # fence height, fair territory area, foul territory area, size of batter's eye, 
 # orientation of home plate (facing west, east, etc.)
+
+
+
+
+
+# BOOTSTRAPPING FOR RUN_PCT AND HR_PCT
+astros <- filter(run_pct, team == "HOU", location == "home")
+marlins <- filter(run_pct, team == "MIA", location == "home")
+padres <- filter(run_pct, team == "SDP", location == "home")
+mariners <- filter(run_pct, team == "SEA", location == "home")
+braves <- filter(run_pct, team == "ATL", location == "home")
+twins <- filter(run_pct, team == "MIN", location == "home")
+
+
+set.seed(123)
+hou_boot_diffs <- replicate(5000, mean(bootstrap_all(astros, "run_percent")[["after"]]) - 
+                              mean(bootstrap_all(astros, "run_percent")[["before"]]))
+mia_boot_diffs <- replicate(5000, mean(bootstrap_all(marlins, "run_percent")[["after"]]) - 
+                              mean(bootstrap_all(marlins, "run_percent")[["before"]]))
+sdp_boot_diffs <- replicate(5000, mean(bootstrap_all(padres, "run_percent")[["after"]]) - 
+                              mean(bootstrap_all(padres, "run_percent")[["before"]]))
+sea_boot_diffs <- replicate(5000, mean(bootstrap_all(mariners, "run_percent")[["after"]]) - 
+                              mean(bootstrap_all(mariners, "run_percent")[["before"]]))
+atl_boot_diffs <- replicate(5000, mean(bootstrap_all(braves, "run_percent")[["after"]]) - 
+                              mean(bootstrap_all(braves, "run_percent")[["before"]]))
+min_boot_diffs <- replicate(5000, mean(bootstrap_all(twins, "run_percent")[["after"]]) - 
+                              mean(bootstrap_all(twins, "run_percent")[["before"]]))
+
+
+# plot hists
+par(mfrow = c(2, 3))
+hist_overlayed(hou_boot_diffs, color = "orange", team = "HOU")
+hist_overlayed(mia_boot_diffs, color = "turquoise", team = "MIA")
+hist_overlayed(sdp_boot_diffs, color = "brown", team = "SDP")
+hist_overlayed(sea_boot_diffs, color = "forestgreen", team = "SEA")
+hist_overlayed(atl_boot_diffs, color = "navy", team = "ATL")
+hist_overlayed(min_boot_diffs, color = "red", team = "MIN")

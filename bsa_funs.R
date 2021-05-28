@@ -69,7 +69,7 @@ bootstrap_all <- function(data, stat) {
   after_i <- sample(after_n, replace = TRUE)
   before <- before[before_i, ]
   after <- after[after_i, ]
-  output <- list("before" = before[, stat], "after" = after[, stat])
+  output <- list("before" = before[[stat]], "after" = after[[stat]])
   output
 }
 

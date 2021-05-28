@@ -225,7 +225,7 @@ direct_df = pd.concat([team, direction], axis = 1)
 # join with output df on team
 output = output.merge(direct_df, on = 'Team', how = 'left')
 
-# change TEX, ATL, SFG, MIA, MIL, HOU, TOR, WSN directions
+# change TEX, ATL, SFG, MIA, MIL, HOU, TOR, WSN, STL directions
 # change rangers direction to east southeast (1997 - 2019)
 for year in range(1997, 2020):
     output.loc[(output['Year'] == year) & (output['Team'] == 'TEX'), 'Direction'] = 'east southeast'
@@ -281,6 +281,9 @@ for year in range(1997, 2009):
 for year in range(1997, 2000):
     output.loc[(output['Year'] == year) & (output['Team'] == 'DET'), 'Direction'] = 'north northeast'
 
+# change cardinals direction to south southeast (1997-2005)
+for year in range(1997, 2006):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'STL'), 'Direction'] = 'south southeast'
 
 
 # distance to deepest part of park
@@ -300,6 +303,7 @@ for year in range(1997, 2000):
 # for SDP using petco 
 # for MIN using metrodome
 # for SEA using safeco
+# for STL usin busch stadium III
 
 deepest = pd.Series([407, 413, 401, 400, 400, 402, 420, 400, 409, 410, 404, 395, 436, 424,
 408, 400, 410, 410, 412, 401, 408, 400, 420, 400, 410, 420, 400, 405, 400, 415], name = 'Deepest')
@@ -382,13 +386,13 @@ for year in range(2013, 2021):
 for year in range(1997, 2000):
     output.loc[(output['Year'] == year) & (output['Team'] == 'DET'), 'Deepest'] = 440
 
+# change STL to 402 (1997, 2005)
+for year in range(1997, 2006):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'DET'), 'Deepest'] = 402
 
 
 
 # turf or real grass
-team = pd.Series(['TEX', 'ARI', 'ATL', 'STL', 'KCR', 'WSN', 'MIA', 'LAA', 'PHI', 'BAL', 
-'CIN', 'LAD', 'HOU', 'COL', 'NYY', 'MIL', 'PIT', 'NYM', 'TBR', 'SDP', 'MIN', 'CHW', 'DET', 
-'TOR', 'CLE', 'BOS', 'CHC', 'SEA', 'OAK', 'SFG'], name = 'Team')
 
 # 0 for real grass, 1 for turf
 # rangers ballpark 0, globe life field (2020) 1
@@ -450,12 +454,192 @@ for year in range(1997, 1999):
 
 
 
-# fence height 
 
 
 # elevation, avg humidity, avg temp in summer
+# only need to change WSN because of relocation
+weather = pd.read_csv('data/metrics_data2.csv') # read in data
+weather.drop(weather.columns[2], axis = 1, inplace = True) # drop location
+
+# series of correspoding team abbrevs to join with output
+teamWeather = pd.Series(['COL', 'CHW', 'CIN', 'BAL', 'TEX', 'NYY', 'MIL', 'ARI', 'HOU',
+'PHI', 'LAD', 'BOS', 'NYM', 'ATL', 'LAA', 'CHC', 'SDP', 'TOR', 'SFG', 'STL', 'CLE', 'DET',
+'TBR', 'MIN', 'PIT', 'OAK', 'WSN', 'KCR', 'MIA', 'SEA'], name = 'Team')
+
+# drop full team name and add abbrevs to weather df
+weather.drop(weather.columns[1], axis = 1, inplace = True)
+weather['Team'] = teamWeather
+
+# drop ballpark name
+weather.drop(weather.columns[0], axis = 1, inplace = True)
+
+# left join with output df on team
+output = output.merge(weather, on = 'Team', how = 'left')
+
+# change WSN to MON values for below years
+# 95 ft above sea level, 77.4% humidity, 77.6 avg daytime summer temp
+for year in range(1997, 2005):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'WSN'), 'Elevation Above Sea Level (ft)'] = 95
+    output.loc[(output['Year'] == year) & (output['Team'] == 'WSN'), 'Average Humidity'] = '77.6%'
+    output.loc[(output['Year'] == year) & (output['Team'] == 'WSN'), 'Average Summer Temperature (degrees F)'] = 77.6
 
 
+
+
+
+# fair and foul territory
+# from http://www.andrewclem.com/Baseball/Stadium_statistics.html
+team = pd.Series(['TEX', 'ARI', 'ATL', 'STL', 'KCR', 'WSN', 'MIA', 'LAA', 'PHI', 'BAL', 
+'CIN', 'LAD', 'HOU', 'COL', 'NYY', 'MIL', 'PIT', 'NYM', 'TBR', 'SDP', 'MIN', 'CHW', 'DET', 
+'TOR', 'CLE', 'BOS', 'CHC', 'SEA', 'OAK', 'SFG'], name = 'Team')
+
+# fair and foul area (per 1000 sq ft)
+# for TEX using globe life park (not new one)
+# for ATL using turner field
+# for STL using busch stadium III
+# for WSN using nationals park
+# for MIA using loandepot park
+# for PHI using citizens bank park
+# for CIN using great american ballpark
+# for HOU using minute maid park
+# for NYY using new yankee stadium
+# for MIL using miller park
+# for PIT using PNC park
+# for NYM using citi field
+# for SDP using petco park
+# for MIN using target field
+# for DET using comerica park
+# for SEA using safeco 
+# for SFG using oracle park
+
+
+fair = pd.Series([112.6, 114.2, 112.1, 112.1, 118.5, 109.1, 114.6, 106.7, 105, 108.1, 106.9, 
+111.1, 107, 119.2, 108.8, 111.2, 111.2, 110.6, 108.9, 110.9, 108.9, 105.3, 113.7, 109.5, 105.4, 
+105.5, 107.8, 106.1, 108.7, 110.8], name = 'fair_area')
+
+foul = pd.Series([18.9, 25.5, 23.1, 25.2, 22.9, 23.1, 21, 21.5, 24.5, 23.6, 23.6, 19.3, 21,
+24.9, 19.7, 21.1, 22.2, 20.7, 25.3, 23.9, 20.7, 25, 26.5, 29, 21.9, 18.1, 18.6, 24.3, 40.7,
+25.5], name = 'foul_area')
+
+# combine fair, foul, and team into df
+fair_df = pd.concat([team, fair, foul], axis = 1)
+
+# left join output with fair_df
+output = output.merge(fair_df, on = 'Team', how = 'left')
+
+# make changes
+# change TEX for 2020
+output.loc[(output['Year'] == 2020) & (output['Team'] == 'TEX'), 'fair_area'] = 110.4
+output.loc[(output['Year'] == 2020) & (output['Team'] == 'TEX'), 'foul_area'] = 23.1
+
+# change ATL (truist park, 2017-present)
+for year in range(2017, 2021):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'ATL'), 'fair_area'] = 109.3
+    output.loc[(output['Year'] == year) & (output['Team'] == 'ATL'), 'foul_area'] = 22.3
+
+# change STL (busch stadium II, 1997-2005)
+for year in range(1997, 2006):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'STL'), 'fair_area'] = 112.1
+    output.loc[(output['Year'] == year) & (output['Team'] == 'STL'), 'foul_area'] = 22.7
+
+# change WSN (olympic stadium, 1997-2004)
+for year in range(1997, 2005):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'WSN'), 'fair_area'] = 112.5
+    output.loc[(output['Year'] == year) & (output['Team'] == 'WSN'), 'foul_area'] = 27.5
+
+# change MIA (hard rock stadium, 1997-2011)
+for year in range(1997, 2012):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'MIA'), 'fair_area'] = 108.9
+    output.loc[(output['Year'] == year) & (output['Team'] == 'MIA'), 'foul_area'] = 24
+
+# change PHI (veterans stadium, 1997-2003)
+for year in range(1997, 2004):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'PHI'), 'fair_area'] = 109
+    output.loc[(output['Year'] == year) & (output['Team'] == 'PHI'), 'foul_area'] = 27.8
+
+# change CIN (riverfront stadium, 1997-2002)
+for year in range(1997, 2003):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'CIN'), 'fair_area'] = 110.4
+    output.loc[(output['Year'] == year) & (output['Team'] == 'CIN'), 'foul_area'] = 23.3
+
+# change HOU (astrodome, 1997-1999)
+for year in range(1997, 2000):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'HOU'), 'fair_area'] = 109.8
+    output.loc[(output['Year'] == year) & (output['Team'] == 'HOU'), 'foul_area'] = 26.9
+
+# change NYY (old yankee stadium, 1997-2008)
+for year in range(1997, 2009):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'NYY'), 'fair_area'] = 128.9
+    output.loc[(output['Year'] == year) & (output['Team'] == 'NYY'), 'foul_area'] = 21
+
+# change MIL (milwaukee county stadium, 1997-2000)
+for year in range(1997, 2001):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'MIL'), 'fair_area'] = 111.4
+    output.loc[(output['Year'] == year) & (output['Team'] == 'MIL'), 'foul_area'] = 29.5
+
+# change PIT (three rivers stadium, 1997-2000)
+for year in range(1997, 2001):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'PIT'), 'fair_area'] = 111.8
+    output.loc[(output['Year'] == year) & (output['Team'] == 'PIT'), 'foul_area'] = 27.3
+
+# change NYM (shea stadium, 1997-2008)
+for year in range(1997, 2009):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'NYM'), 'fair_area'] = 111.3
+    output.loc[(output['Year'] == year) & (output['Team'] == 'NYM'), 'foul_area'] = 21.9
+
+# change SDP (jack murphy stadium, 1997-2003)
+for year in range(1997, 2004):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'SDP'), 'fair_area'] = 106.9
+    output.loc[(output['Year'] == year) & (output['Team'] == 'SDP'), 'foul_area'] = 28.9
+
+# change MIN (metrodome, 1997-2009)
+for year in range(1997, 2010):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'MIN'), 'fair_area'] = 107.5
+    output.loc[(output['Year'] == year) & (output['Team'] == 'MIN'), 'foul_area'] = 34.3
+
+# change DET (tiger stadium, 1997-1999)
+for year in range(1997, 2000):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'DET'), 'fair_area'] = 108.5
+    output.loc[(output['Year'] == year) & (output['Team'] == 'DET'), 'foul_area'] = 32.4
+
+# change SEA (kingdome, 1997-1998)
+for year in range(1997, 1999):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'SEA'), 'fair_area'] = 104.2
+    output.loc[(output['Year'] == year) & (output['Team'] == 'SEA'), 'foul_area'] = 28
+
+# change SFG (candlestick park, 1997-1999)
+for year in range(1997, 2000):
+    output.loc[(output['Year'] == year) & (output['Team'] == 'SFG'), 'fair_area'] = 106.1
+    output.loc[(output['Year'] == year) & (output['Team'] == 'SFG'), 'foul_area'] = 34.1
+
+
+
+
+
+
+
+output.iloc[708]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# fence height 
 
 # save
 # path = r'C:/Users/slash/Documents/bsa-research/data'
